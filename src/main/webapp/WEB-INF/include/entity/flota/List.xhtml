@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:form id="FlotaListForm">
+
+
+        <p:dataTable id="datalist"
+                     value="#{flotaController.items}"
+                     lazy="false"
+                     rowKey="#{item.idFlota}"
+                     var="item"
+                     paginator="true"
+                     rows="100"
+                     rowsPerPageTemplate="50,100,200"
+                     selectionMode="single"
+                     selection="#{flotaController.selected}" >
+            <!--
+                     To enable Lazy Loading, please copy/replace the following lines above,
+                     and be sure to replace the word HASH with the # symbol:
+            
+                     value="HASH{flotaController.lazyItems}"
+                     lazy="true"
+                     rowKey="HASH{item.idFlota}"  <<< Remove this line
+            -->
+
+
+            <p:ajax event="rowSelect"   update="@form:createButton,@form:viewButton,@form:editButton,@form:deleteButton" global="false"/>
+            <p:ajax event="rowUnselect" update="@form:createButton,@form:viewButton,@form:editButton,@form:deleteButton" global="false"/>
+            <p:ajax event="contextMenu" update="@form:createButton @form:viewButton @form:editButton @form:deleteButton" global="false"/>
+            <p:ajax event="rowDblselect" onsuccess="document.getElementById('FlotaListForm:viewButton').click();" global="false"/>
+
+            <f:facet name="header">
+                Listado de Flotas
+            </f:facet>
+            
+            <p:column sortBy="#{item.idFlota}" filterBy="#{item.idFlota}">
+                <f:facet name="header">
+                    <h:outputText value="N°"/>
+                </f:facet>
+                <h:outputText value="#{item.idFlota}"/>
+            </p:column>
+
+
+            <p:column sortBy="#{item.nombreFlota}" filterBy="#{item.nombreFlota}">
+                <f:facet name="header">
+                    <h:outputText value="Nombre"/>
+                </f:facet>
+                <h:outputText value="#{item.nombreFlota}"/>
+            </p:column>
+            
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText value="N° de Buses"/>
+                </f:facet>
+                <h:outputText value="#{item.buses.size()}"/>
+            </p:column>
+
+
+        </p:dataTable>
+
+        <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{flotaController.prepareCreate}" update=":FlotaCreateForm" oncomplete="PF('FlotaCreateDialog').show()"/>
+        <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":FlotaViewForm" oncomplete="PF('FlotaViewDialog').show()" disabled="#{empty flotaController.selected}"/>
+        <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":FlotaEditForm" oncomplete="PF('FlotaEditDialog').show()" disabled="#{empty flotaController.selected}"/>
+        <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{flotaController.delete}" update=":growl,datalist" disabled="#{empty flotaController.selected}">
+            <p:confirm header="#{bundle.ConfirmationHeader}" message="#{bundle.ConfirmDeleteMessage}" icon="ui-icon-alert"/>
+        </p:commandButton>
+
+
+        <ui:include src="/WEB-INF/include/confirmation.xhtml"/>
+    </h:form>
+
+</ui:composition>

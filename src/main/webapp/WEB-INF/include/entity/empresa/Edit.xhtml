@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+        <p:dialog id="EmpresaEditDlg" widgetVar="EmpresaEditDialog" modal="true" resizable="false"  appendTo="@(body)" header="Editar Empresa:" closeOnEscape="true">
+
+            <h:form id="EmpresaEditForm">
+
+                <h:panelGroup id="display">
+                    <p:panelGrid  columns="2" columnClasses="column" rendered="#{empresaController.selected != null}">
+
+
+                        <h:outputLabel value="N°:" for="idEmpresa" />
+                        <h:panelGroup>
+                            <h:outputText id="idEmpresa" value="#{empresaController.selected.idEmpresa}" />
+                        </h:panelGroup>
+
+                        <p:outputLabel value="Rut:" for="rutEmpresa" />
+                        <h:panelGroup>
+                            <p:inputText id="rutEmpresa" value="#{empresaController.selected.rutEmpresa}" title="#{bundle.EditEmpresaTitle_rutEmpresa}" required="true" requiredMessage="#{bundle.EditEmpresaRequiredMessage_rutEmpresa}" onkeypress="return event.keyCode != 13"/>
+                        </h:panelGroup>
+
+                        <p:outputLabel value="Nombre o Razón Social:" for="nombreEmpresa" />
+                        <h:panelGroup>
+                            <p:inputText id="nombreEmpresa" value="#{empresaController.selected.nombreEmpresa}" title="#{bundle.EditEmpresaTitle_nombreEmpresa}" required="true" requiredMessage="#{bundle.EditEmpresaRequiredMessage_nombreEmpresa}" size="50" onkeypress="return event.keyCode != 13"/>
+                        </h:panelGroup>
+
+                        <p:outputLabel value="#{bundle.EditEmpresaLabel_giro}" for="giro" />
+                        <h:panelGroup>
+                            <p:inputText id="giro" value="#{empresaController.selected.giro}" title="#{bundle.EditEmpresaTitle_giro}" required="true" requiredMessage="#{bundle.EditEmpresaRequiredMessage_giro}" size="30" onkeypress="return event.keyCode != 13"/> 
+                        </h:panelGroup>
+
+                        <p:outputLabel value="Dirección:" for="direccionEmpresa" />
+                        <h:panelGroup>
+                            <p:inputText id="direccionEmpresa" value="#{empresaController.selected.direccionEmpresa}" title="#{bundle.EditEmpresaTitle_direccionEmpresa}" size="40" onkeypress="return event.keyCode != 13"/>
+                        </h:panelGroup>
+
+                        <p:outputLabel value="Teléfono o Celular:" for="telefonoEmpresa" />
+                        <h:panelGroup>
+                            <p:inputText id="telefonoEmpresa" value="#{empresaController.selected.telefonoEmpresa}" title="#{bundle.EditEmpresaTitle_telefonoEmpresa}" onkeypress="return event.keyCode != 13"/>
+                        </h:panelGroup>
+
+                        <p:outputLabel value="Email:" for="emailEmpresa" />
+                        <h:panelGroup>
+                            <p:inputText id="emailEmpresa" value="#{empresaController.selected.emailEmpresa}" title="#{bundle.EditEmpresaTitle_emailEmpresa}" size="30" onkeypress="return event.keyCode != 13"/>
+                        </h:panelGroup>
+
+                        <p:outputLabel value="#{bundle.EditEmpresaLabel_cajaCompensacion}" for="cajaCompensacion" />
+                        <h:panelGroup>
+                            <p:selectOneMenu id="cajaCompensacion" value="#{empresaController.selected.cajaCompensacion}" required="true" requiredMessage="#{bundle.EditEmpresaRequiredMessage_cajaCompensacion}" converter="cajaCompensacionConverter">
+                                <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
+                                <f:selectItems value="#{cajaCompensacionController.items}"
+                                               var="cajaCompensacionItem"
+                                               itemValue="#{cajaCompensacionItem}"
+                                               itemLabel="#{cajaCompensacionItem.nombreCajaCompensacion}"
+                                               />
+
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+
+                        <p:outputLabel value="#{bundle.EditEmpresaLabel_mutual}" for="mutual" />
+                        <h:panelGroup>
+                            <p:selectOneMenu id="mutual" value="#{empresaController.selected.mutual}" required="true" requiredMessage="#{bundle.EditEmpresaRequiredMessage_mutual}" converter="mutualConverter">
+                                <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
+                                <f:selectItems value="#{mutualController.items}"
+                                               var="mutualItem"
+                                               itemValue="#{mutualItem}"
+                                               itemLabel="#{mutualItem.nombreMutual}"
+                                               />
+
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+
+                        <p:outputLabel value="% Mutual:" for="porcentaje" />
+                        <h:panelGroup>
+                            <p:inputText id="porcentaje" value="#{empresaController.selected.porcentajeMutual}" required="true" requiredMessage="Debe ingresar el valor" onkeypress="return event.keyCode != 13"/>                            
+                        </h:panelGroup>
+
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{empresaController.save}" value="#{bundle.Save}" update="display,:EmpresaListForm:datalist,:growl" oncomplete="handleSubmit(xhr,status,args,PF('EmpresaEditDialog'));">
+                        <p:confirm header="#{bundle.ConfirmationHeader}" message="#{bundle.ConfirmEditMessage}" icon="ui-icon-alert"/>
+                    </p:commandButton>
+                    <p:commandButton value="#{bundle.Cancel}" oncomplete="PF('EmpresaEditDialog').hide()" update="display" process="@this" immediate="true" resetValues="true"/>
+                </h:panelGroup>
+
+            </h:form>
+
+        </p:dialog>
+
+    </ui:composition>
+
+</html>

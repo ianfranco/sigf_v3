@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:form id="EmpresaListForm">
+
+
+        <p:contextMenu id="EmpresaDataTableContextMenu" for="datalist">
+            <p:menuitem value="#{bundle.Create}" onclick="document.getElementById('EmpresaListForm:createButton').click();" icon="ui-icon-plus"/>
+            <p:menuitem value="#{bundle.View}" onclick="document.getElementById('EmpresaListForm:viewButton').click();" icon="ui-icon-search"/>
+            <p:menuitem value="#{bundle.Edit}" onclick="document.getElementById('EmpresaListForm:editButton').click();" icon="ui-icon-pencil"/>
+            <p:menuitem value="#{bundle.Delete}" onclick="document.getElementById('EmpresaListForm:deleteButton').click();" icon="ui-icon-trash"/>
+        </p:contextMenu>
+        <p:dataTable id="datalist"
+                     value="#{empresaController.items}"                     
+                     var="item"
+                     paginator="true"
+                     rows="100"
+                     rowKey="#{item.idEmpresa}"
+                     rowsPerPageTemplate="50,100,200"
+                     selectionMode="single"
+                     selection="#{empresaController.selected}"
+                     emptyMessage="No se han encontrado registros"
+                     tableStyle="table-layout: auto" >
+            <!--
+                     To disable Lazy Loading, please copy/replace the following lines above,
+                     and be sure to replace the word HASH with the # symbol:
+            
+                     value="HASH{empresaController.items}"
+                     lazy="false"
+                     rowKey="HASH{item.idEmpresa}"
+            -->
+
+
+            <p:ajax event="rowSelect"   update="@form:createButton,@form:viewButton,@form:editButton,@form:deleteButton,@form:EmpresaDataTableContextMenu" listener="#{empresaController.resetParents}" global="false"/>
+            <p:ajax event="rowUnselect" update="@form:createButton,@form:viewButton,@form:editButton,@form:deleteButton,@form:EmpresaDataTableContextMenu" listener="#{empresaController.resetParents}" global="false"/>
+            <p:ajax event="contextMenu" update="@form:createButton @form:viewButton @form:editButton @form:deleteButton" listener="#{empresaController.resetParents}" global="false"/>
+            <p:ajax event="rowDblselect" onsuccess="document.getElementById('EmpresaListForm:viewButton').click();" global="false"/>
+
+            <f:facet name="header">
+                Listado de Empresas
+            </f:facet>
+
+            <p:column sortBy="#{item.idEmpresa}" filterBy="#{item.idEmpresa}" filterStyle="width:50px;" style="text-align: center;">
+                <f:facet name="header">
+                    <h:outputText value="N°"/>
+                </f:facet>
+                <h:outputText value="#{item.idEmpresa}"/>
+            </p:column>
+
+
+            <p:column sortBy="#{item.rutEmpresa}" filterBy="#{item.rutEmpresa}" style="text-align: center;">
+                <f:facet name="header">
+                    <h:outputText value="Rut"/>
+                </f:facet>
+                <h:outputText value="#{item.rutEmpresa}"/>
+            </p:column>
+
+
+            <p:column sortBy="#{item.nombreEmpresa}" filterBy="#{item.nombreEmpresa}">
+                <f:facet name="header">
+                    <h:outputText value="Nombre"/>
+                </f:facet>
+                <h:outputText value="#{item.nombreEmpresa}"/>
+            </p:column>
+
+            <p:column sortBy="#{item.telefonoEmpresa}" filterBy="#{item.telefonoEmpresa}">
+                <f:facet name="header">
+                    <h:outputText value="Teléfono"/>
+                </f:facet>
+                <h:outputText value="#{item.telefonoEmpresa}"/>
+            </p:column>
+
+            <p:column sortBy="#{item.emailEmpresa}" filterBy="#{item.emailEmpresa}">
+                <f:facet name="header">
+                    <h:outputText value="Email"/>
+                </f:facet>
+                <h:outputText value="#{item.emailEmpresa}"/>
+            </p:column>
+
+            <p:column sortBy="#{item.cajaCompensacion.nombreCajaCompensacion}" filterBy="#{item.cajaCompensacion.nombreCajaCompensacion}">
+                <f:facet name="header">
+                    <h:outputText value="Caja Comp."/>
+                </f:facet>
+                <h:outputText value="#{item.cajaCompensacion.nombreCajaCompensacion}"/>
+            </p:column>
+
+
+            <p:column sortBy="#{item.mutual.nombreMutual}" filterBy="#{item.mutual.nombreMutual}">
+                <f:facet name="header">
+                    <h:outputText value="#{bundle.ListEmpresaTitle_mutual}"/>
+                </f:facet>
+                <h:outputText value="#{item.mutual.nombreMutual}"/>
+            </p:column>
+
+            <p:column sortBy="#{item.porcentajeMutual}" filterBy="#{item.porcentajeMutual}" style="text-align: center;">
+                <f:facet name="header">
+                    <h:outputText value="% Mutual"/>
+                </f:facet>
+                <h:outputText value="#{item.porcentajeMutual}"/>
+            </p:column>
+            
+        </p:dataTable>
+
+        <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{empresaController.prepareCreate}" update=":EmpresaCreateForm" oncomplete="PF('EmpresaCreateDialog').show()"/>
+        <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":EmpresaViewForm" oncomplete="PF('EmpresaViewDialog').show()" disabled="#{empty empresaController.selected}"/>
+        <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":EmpresaEditForm" oncomplete="PF('EmpresaEditDialog').show()" disabled="#{empty empresaController.selected}"/>
+        <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{empresaController.delete}" update=":growl,datalist" disabled="#{empty empresaController.selected}">
+            <p:confirm header="#{bundle.ConfirmationHeader}" message="#{bundle.ConfirmDeleteMessage}" icon="ui-icon-alert"/>
+        </p:commandButton>
+
+
+        <ui:include src="/WEB-INF/include/confirmation.xhtml"/>
+    </h:form>
+
+</ui:composition>

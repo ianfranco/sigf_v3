@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+        <p:graphicImage name="ajax-loader.gif" library="images"/>
+    </p:dialog>
+
+    <p:ajaxStatus>
+        <h:form id="RelacionLaboralListForm">
+            <p:dataTable id="datalist"
+                         value="#{relacionLaboralController.contratos}"
+                         lazy="false"
+                         var="item"
+                         rowKey="#{item.empresa}"                         
+                         selectionMode="single"
+                         tableStyle="table-layout: auto" 
+                         emptyMessage="No se han encontrado registros"
+                         rowIndexVar="rowIndex">
+                <!--
+                         To enable Lazy Loading, please copy/replace the following lines above,
+                         and be sure to replace the word HASH with the # symbol:
+                
+                         value="HASH{relacionLaboralController.lazyItems}"
+                         lazy="true"
+                         rowKey="HASH{item.idRelacionLaboral}"  <<< Remove this line
+                -->
+
+                <f:facet name="header">
+                    Contratos Activos x Empresa
+                </f:facet>
+
+                <p:columnGroup type="header">
+                    <p:row>
+                        <p:column rowspan="2" headerText="Empresa" />
+                        <p:column colspan="4" headerText="Detalle" />
+                    </p:row>
+                    <p:row>
+                        <p:column headerText="Trabajador" />
+                        <p:column headerText="Contrato" />
+                        <p:column headerText="Sueldo Base" />
+                        <p:column headerText="F.Contrato" />
+                    </p:row>
+                </p:columnGroup>
+
+
+                <p:subTable var="contratos" value="#{item.contratos}" >
+                    <f:facet name="header">
+                        <h:outputText value="#{item.empresa}" />
+                    </f:facet>
+                    <p:column>
+                        <h:outputText value="" />
+                    </p:column>
+                    <p:column>
+                        <h:outputText value="#{contratos.trabajador}" />
+                    </p:column>
+                    <p:column style="text-align: center;">
+                        <h:outputText value="#{contratos.tipoContrato}"/>
+                    </p:column>
+                    <p:column style="text-align: center;">
+                        <h:outputText value="#{contratos.sueldoBase}">
+                            <f:convertNumber currencySymbol="$ "/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column style="text-align: center;">
+                        <h:outputText value="#{contratos.fechaInicio}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:columnGroup type="footer">
+                        <p:row>
+                            <p:column footerText="Cantidad: " style="text-align:right"/>
+                            <p:column footerText="#{item.contratos.size()}" />
+                            <p:column footerText="" />
+                            <p:column footerText="" />
+                            <p:column footerText="" />
+                        </p:row>
+                    </p:columnGroup>
+                </p:subTable>
+
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="N°"/>
+                    </f:facet>
+                    <h:outputText value="#{rowIndex+1}"/>
+                </p:column>
+
+
+                <p:column sortBy="#{item.empresa}" filterBy="#{item.empresa}">
+                    <f:facet name="header">
+                        <h:outputText value="#{bundle.ListRelacionLaboralTitle_empresa}"/>
+                    </f:facet>
+                    <h:outputText value="#{item.empresa}"/>
+                </p:column>
+
+
+                <p:column sortBy="#{item.tipoContrato.nombreTipoContrato}" filterBy="#{item.tipoContrato.nombreTipoContrato}">
+                    <f:facet name="header">
+                        <h:outputText value="#{bundle.ListRelacionLaboralTitle_tipoContrato}"/>
+                    </f:facet>
+                    <h:outputText value="#{item.tipoContrato.nombreTipoContrato}"/>
+                </p:column>
+
+
+                <p:column sortBy="#{item.tipoTrabajador.nombreTipoTrabajador}" filterBy="#{item.tipoTrabajador.nombreTipoTrabajador}">
+                    <f:facet name="header">
+                        <h:outputText value="#{bundle.ListRelacionLaboralTitle_tipoTrabajador}"/>
+                    </f:facet>
+                    <h:outputText value="#{item.tipoTrabajador.nombreTipoTrabajador}"/>
+                </p:column>
+
+
+                <p:column sortBy="#{item.trabajador}" filterBy="#{item.trabajador}">
+                    <f:facet name="header">
+                        <h:outputText value="#{bundle.ListRelacionLaboralTitle_trabajador}"/>
+                    </f:facet>
+                    <h:outputText value="#{item.trabajador}"/>
+                </p:column>
+
+
+                <p:column sortBy="#{item.fechaInicio}" filterBy="#{item.fechaInicio}">
+                    <f:facet name="header">
+                        <h:outputText value="#{bundle.ListRelacionLaboralTitle_fechaInicio}"/>
+                    </f:facet>
+                    <h:outputText value="#{item.fechaInicio}">
+                        <f:convertDateTime pattern="MM/dd/yyyy" />
+                    </h:outputText>
+                </p:column>
+
+                <!--
+                                    <p:column sortBy="#{item.fechaFin}" filterBy="#{item.fechaFin}">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{bundle.ListRelacionLaboralTitle_fechaFin}"/>
+                                        </f:facet>
+                                        <h:outputText value="#{item.fechaFin}">
+                                            <f:convertDateTime pattern="MM/dd/yyyy" />
+                                        </h:outputText>
+                                    </p:column>
+                -->
+                <!--
+                                    <p:column sortBy="#{item.tipoContrato_1}" filterBy="#{item.tipoContrato_1}">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{bundle.ListRelacionLaboralTitle_tipoContrato_1}"/>
+                                        </f:facet>
+                                        <h:outputText value="#{item.tipoContrato_1}"/>
+                                    </p:column>
+                -->
+                <!--
+                                    <p:column sortBy="#{item.sueldoBase}" filterBy="#{item.sueldoBase}">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{bundle.ListRelacionLaboralTitle_sueldoBase}"/>
+                                        </f:facet>
+                                        <h:outputText value="#{item.sueldoBase}"/>
+                                    </p:column>
+                -->
+                <!--
+                                    <p:column sortBy="#{item.rutaArchivoRespaldo}" filterBy="#{item.rutaArchivoRespaldo}">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{bundle.ListRelacionLaboralTitle_rutaArchivoRespaldo}"/>
+                                        </f:facet>
+                                        <h:outputText value="#{item.rutaArchivoRespaldo}"/>
+                                    </p:column>
+                -->
+                <!--
+                                    <p:column sortBy="#{item.estado}" filterBy="#{item.estado}">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{bundle.ListRelacionLaboralTitle_estado}"/>
+                                        </f:facet>
+                                        <h:selectBooleanCheckbox id="estado" value="#{item.estado}" title="#{bundle.EditRelacionLaboralTitle_estado}"  disabled="true"/>
+                                    </p:column>
+                -->
+
+            </p:dataTable>
+
+        </h:form>
+    </p:ajaxStatus>
+</ui:composition>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <ui:composition template="./../templateBoletos.xhtml">
+
+        <ui:define name="content">      
+
+            <p:panel id="VentaBoletoCreateDlg" widgetVar="VentaBoletoCreateDialog" header="Nueva Venta de Boletos">
+
+                <h:form id="VentaBoletoCreateForm">
+
+                    <h:panelGroup id="display">
+                        <h:panelGrid columns="2" columnClasses="value" id="grupoInicial">
+                            <p:outputLabel value="Fecha" for="fechaVenta"/>
+                            <p:calendar id="fechaVenta" pattern="dd/MM/yyyy" value="#{registroVentaBoletoController.selected.fechaVentaBoleto}" required="true"  autocomplete="off" disabled="true"/> 
+
+                            <p:outputLabel value="Terminal" for="terminal"/>
+                            <p:selectOneMenu id="terminal" value="#{registroVentaBoletoController.selected.terminal}" required="true" requiredMessage="Debe Ingresar la Fecha de Compra" converter="terminalConverter">
+                                <f:selectItem itemLabel="Seleccionar"/>
+                                <f:selectItems value="#{registroVentaBoletoController.terminalItems}"/>
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="Comprador" for="comprador"/>
+                            <p:inputText id="comprador" value="#{registroVentaBoletoController.selected.nombreComprador}" required="true" size="45" requiredMessage="Debe Ingresar el Comprador"/>
+                        </h:panelGrid>
+
+                        <p:separator class="ui-priority-primary"/>
+                        <h:panelGrid columns="4" id="detalleVentasPanel" style="margin-top:10px;margin-bottom:0px">
+                            <p:outputLabel value="Tipo Boleto" for="idBoleto"/>
+                            <p:outputLabel value="Serie" for="inventarioInterno"/>
+                            <p:outputLabel value="Valor x Rollo" for="valorRollo"/>
+                            <p:outputLabel value="Agregar"/>
+
+                            <p:selectOneMenu id="idBoleto" value="#{registroVentaBoletoController.boleto}" requiredMessage="Debe seleccionar el tipo de boleto" converter="boletoConverter" >
+                                <f:selectItem itemLabel="Seleccione ..."/>
+                                <f:selectItems value="#{registroVentaBoletoController.boletoItems}"/>
+                                <p:ajax update="inventarioInterno" listener="#{registroVentaBoletoController.handleBoletoChange}"/>
+                            </p:selectOneMenu>
+
+                            <p:selectOneMenu id="inventarioInterno" value="#{registroVentaBoletoController.inventarioInternoSelected}" converter="inventarioInternoConverter">
+                                <f:selectItem itemLabel="Seleccione ..."/>
+                                <f:selectItems value="#{registroVentaBoletoController.inventarioItems}"/>
+                            </p:selectOneMenu>
+
+                            <p:inputNumber decimalPlaces="0" id="valorRollo" value="#{registroVentaBoletoController.valorRollo}" title="#{bundle.CreateDetalleCompraBoletoTitle_serie}" size="10" maxlength="10" onfocus="this.setSelectionRange(0, this.value.length)" autocomplete="off" />
+                            <p:commandButton value="Agregar" id="addButton" actionListener="#{registroVentaBoletoController.addDetalleVenta(event)}" styleClass="ui-priority-primary" update=":VentaBoletoCreateForm:datalist, :growl,  :VentaBoletoCreateForm:totales, inventarioInterno">
+                                <f:ajax render="detalleVentasPanel" resetValues="true" />
+
+                            </p:commandButton>                        
+                        </h:panelGrid>
+
+                        <p:dataTable id="datalist"
+                                     value="#{registroVentaBoletoController.items}" 
+                                     widgetVar="datalist"
+                                     var="item"
+                                     rowKey="#{item.idDetalleVentaBoleto}"
+                                     rowIndexVar="rowIndex"                                                                          
+                                     emptyMessage="No se han encontrado registros" style="width: 800px;margin-top: 10px;">
+
+                            <f:facet name="header">
+                                Detalle Venta
+                            </f:facet>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="N°"/>
+                                </f:facet>
+                                <h:outputText value="#{rowIndex+1}"/>
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Tipo Boleto"/>
+                                </f:facet>
+                                <h:outputText value="#{item.inventarioInterno.boleto.nombreBoleto}"/>
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Serie"/>
+                                </f:facet>
+                                <h:outputText value="#{item.inventarioInterno}"/>
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="N° Rollos"/>
+                                </f:facet>
+                                <h:outputText value="#{item.inventarioInterno.cantidadRollos}"/>
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Total"/>
+                                </f:facet>
+                                <h:outputText value="#{item.total}">
+                                    <f:convertNumber currencyCode="$"/>
+                                </h:outputText>
+                            </p:column>
+
+                        </p:dataTable>                       
+                        <p:separator class="ui-priority-primary" />
+                        <h:panelGrid id="totales" columns="3" columnClasses="value" style="margin-bottom: 10px;">
+                            <p:outputLabel value="Total" for="totalCompra" />
+                            <p:inputNumber decimalPlaces="0" id="totalCompra" value="#{registroVentaBoletoController.suma}" onfocus="this.setSelectionRange(0, this.value.length)" autocomplete="off" /> 
+                            <p:commandButton actionListener="#{registroVentaBoletoController.saveNew}" value="Aceptar" update=":growl, datalist" styleClass="ui-priority-primary" >
+                                <p:confirm header="Confirmación" message="¿Ingresar Nueva Venta?" icon="ui-icon-alert" />                            
+                            </p:commandButton>                        
+                        </h:panelGrid>
+                    </h:panelGroup>   
+                    <ui:include src="/WEB-INF/include/confirmation.xhtml"/>
+                </h:form>
+            </p:panel>
+        </ui:define>
+    </ui:composition>
+</html>

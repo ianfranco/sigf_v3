@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:form id="TipoContratoListForm">
+        <p:dataTable id="datalist"
+                     value="#{tipoContratoController.items}"
+                     lazy="false"
+                     rowKey="#{item.idTipoContrato}"
+                     var="item"
+                     paginator="true"
+                     rows="100"
+                     rowsPerPageTemplate="50,100,200"
+                     selectionMode="single"
+                     selection="#{tipoContratoController.selected}">
+            <!--
+                     To enable Lazy Loading, please copy/replace the following lines above,
+                     and be sure to replace the word HASH with the # symbol:
+            
+                     value="HASH{tipoContratoController.lazyItems}"
+                     lazy="true"
+                     rowKey="HASH{item.idTipoContrato}"  <<< Remove this line
+            -->
+
+            <p:ajax event="rowSelect"   update="@form:createButton,@form:viewButton,@form:editButton,@form:deleteButton"/>
+            <p:ajax event="rowUnselect" update="@form:createButton,@form:viewButton,@form:editButton,@form:deleteButton"/>
+            <p:ajax event="contextMenu" update="@form:createButton @form:viewButton @form:editButton @form:deleteButton"/>
+            <p:ajax event="rowDblselect" onsuccess="document.getElementById('TipoContratoListForm:viewButton').click();"/>
+            
+            <f:facet name="header">
+                Tipos de Contratos
+            </f:facet>
+            
+            <p:column sortBy="#{item.idTipoContrato}" filterBy="#{item.idTipoContrato}">
+                <f:facet name="header">
+                    <h:outputText value="N°"/>
+                </f:facet>
+                <h:outputText value="#{item.idTipoContrato}"/>
+            </p:column>
+
+
+            <p:column sortBy="#{item.nombreTipoContrato}" filterBy="#{item.nombreTipoContrato}">
+                <f:facet name="header">
+                    <h:outputText value="#{bundle.ListTipoContratoTitle_nombreTipoContrato}"/>
+                </f:facet>
+                <h:outputText value="#{item.nombreTipoContrato}"/>
+            </p:column>
+
+
+        </p:dataTable>
+
+        <p:commandButton id="createButton" icon="ui-icon-plus"   value="#{bundle.Create}" actionListener="#{tipoContratoController.prepareCreate}" update=":TipoContratoCreateForm" oncomplete="PF('TipoContratoCreateDialog').show()"/>
+        <p:commandButton id="viewButton"   icon="ui-icon-search" value="#{bundle.View}" update=":TipoContratoViewForm" oncomplete="PF('TipoContratoViewDialog').show()" disabled="#{empty tipoContratoController.selected}"/>
+        <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":TipoContratoEditForm" oncomplete="PF('TipoContratoEditDialog').show()" disabled="#{empty tipoContratoController.selected}"/>
+        <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{tipoContratoController.delete}" update=":growl,datalist" disabled="#{empty tipoContratoController.selected}">
+            <p:confirm header="#{bundle.ConfirmationHeader}" message="#{bundle.ConfirmDeleteMessage}" icon="ui-icon-alert"/>
+        </p:commandButton>
+
+
+        <ui:include src="/WEB-INF/include/confirmation.xhtml"/>
+    </h:form>
+
+</ui:composition>

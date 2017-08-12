@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="./../../templateRemuneraciones.xhtml">
+
+    <ui:define name="content" class="ui-corner-all" >
+        <h:form id="selector">
+            <p:panel header="Finiquitos x Mes">
+                <h:panelGrid columns="8">
+                    <p:outputLabel for="mes" value="Seleccionar:" />
+                    <p:selectOneMenu id="mes" value="#{ultimoFiniquitosController.mes}" style="width:125px">
+                        <f:selectItem itemLabel="Enero" itemValue="1" />
+                        <f:selectItem itemLabel="Febrero" itemValue="2" />
+                        <f:selectItem itemLabel="Marzo" itemValue="3" />
+                        <f:selectItem itemLabel="Abril" itemValue="4" />
+                        <f:selectItem itemLabel="Mayo" itemValue="5" />
+                        <f:selectItem itemLabel="Junio" itemValue="6" />
+                        <f:selectItem itemLabel="Julio" itemValue="7" />
+                        <f:selectItem itemLabel="Agosto" itemValue="8" />
+                        <f:selectItem itemLabel="Septiembre" itemValue="9" />
+                        <f:selectItem itemLabel="Octubre" itemValue="10" />
+                        <f:selectItem itemLabel="Noviembre" itemValue="11" />
+                        <f:selectItem itemLabel="Diciembre" itemValue="12" />
+                    </p:selectOneMenu>
+
+                    <p:outputLabel for="anio" value="Año:" />
+                    <p:inputText id="anio" value="#{ultimoFiniquitosController.anio}" size="5" />
+
+                    <p:commandButton value="Buscar" update=":Display:datalist" actionListener="#{ultimoFiniquitosController.init}"  />
+
+                </h:panelGrid>
+            </p:panel>
+
+
+
+        </h:form>
+
+        <h:form id="Display">
+            <p:contextMenu id="ContratosDataTableContextMenu" for="datalist">                  
+                <p:menuitem value="#{bundle.Edit}" onclick="document.getElementById('Display:editButton').click();" icon="ui-icon-pencil"/>
+                <p:menuitem value="#{bundle.Delete}" onclick="document.getElementById('Display:deleteButton').click();" icon="ui-icon-trash"/>
+                <p:separator/>
+            </p:contextMenu>
+            <p:panel style="margin-top: 5px;">
+                <p:dataTable id="datalist" 
+                             value="#{ultimoFiniquitosController.finiquitos}"
+                             lazy="false"
+                             var="item"
+                             rowKey="#{item.idFiniquitoRelacionLaboral}"
+                             rowIndexVar="rowIndex"                         
+                             selectionMode="single"
+                             selection="#{ultimoFiniquitosController.selected}"
+                             emptyMessage="No se han encontrado registros"
+                             tableStyle="table-layout: auto" filterEvent="blur">
+
+                    <p:ajax event="rowSelect"   update="@form:editButton,@form:deleteButton,@form:ContratosDataTableContextMenu" global="false"/>
+                    <p:ajax event="rowUnselect" update="@form:editButton,@form:deleteButton,@form:ContratosDataTableContextMenu" global="false"/>
+                    <p:ajax event="contextMenu" update="@form:editButton @form:deleteButton" global="false"/>
+
+                    <f:facet name="header">
+                        Finiquitos x Mes: #{ultimoFiniquitosController.header}
+                    </f:facet>
+
+                    <p:column style="text-align: center;">
+                        <f:facet name="header">
+                            <h:outputText value="N°"/>
+                        </f:facet>
+                        <h:outputText value="#{rowIndex+1}"/>
+                    </p:column>
+                    
+                    <p:column filterBy="#{item.relacionLaboral.empresa.idEmpresa}" style="text-align: center;">
+                        <f:facet name="header">
+                            <h:outputText value="Cod.Empresa"/>
+                        </f:facet>
+                        <h:outputText value="#{item.relacionLaboral.empresa.idEmpresa}"/>
+                    </p:column>
+
+                    <p:column filterBy="#{item.relacionLaboral.empresa}" filterStyle="width:100px;"  style="text-align: center;">
+                        <f:facet name="header">
+                            <h:outputText value="Empresa"/>
+                        </f:facet>
+                        <h:outputText value="#{item.relacionLaboral.empresa}"/>
+                    </p:column>
+                    
+                    <p:column filterBy="#{item.relacionLaboral.trabajador.codigoTrabajador}" style="text-align: center;">
+                        <f:facet name="header">
+                            <h:outputText value="Cód. Trabajador"/>
+                        </f:facet>
+                        <h:outputText value="#{item.relacionLaboral.trabajador.codigoTrabajador}"/>
+                    </p:column>
+
+                    <p:column filterBy="#{item.relacionLaboral.trabajador}" style="text-align: center;">
+                        <f:facet name="header">
+                            <h:outputText value="Trabajador"/>
+                        </f:facet>
+                        <h:outputText value="#{item.relacionLaboral.trabajador}"/>
+                    </p:column>
+
+                    <p:column filterBy="#{item.relacionLaboral.tipoContrato}" style="text-align: center;">
+                        <f:facet name="header">
+                            <h:outputText value="Contrato"/>
+                        </f:facet>
+                        <h:outputText value="#{item.relacionLaboral.tipoContrato}"/>
+                    </p:column>
+
+                    <p:column style="text-align: center;">
+                        <f:facet name="header">
+                            <h:outputText value="F.Finiquito"/>
+                        </f:facet>
+                        <h:outputText value="#{item.fechaFiniquito}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column style="text-align: center;">
+                        <f:facet name="header">
+                            <h:outputText value="Motivo"/>
+                        </f:facet>
+                        <h:outputText value="#{item.causalFiniquito.codigoCausalFiniquito}"/>
+                    </p:column>
+
+                </p:dataTable>
+                <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update="FiniquitoRelacionLaboralEditForm:display" oncomplete="PF('FiniquitoRelacionLaboralEditDialog').show()" disabled="#{empty ultimoFiniquitosController.selected}" />
+                <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" actionListener="#{ultimoFiniquitosController.delete()}" update="growl,datalist" disabled="#{empty ultimoFiniquitosController.selected}">
+                    <p:confirm header="#{bundle.ConfirmationHeader}" message="¿Eliminar el Finiquito?" icon="ui-icon-alert"/>
+                </p:commandButton>
+            </p:panel>
+            <ui:include src="/WEB-INF/include/confirmation.xhtml"/>
+        </h:form>
+
+        <p:dialog id="FiniquitoRelacionLaboralEditDlg" widgetVar="FiniquitoRelacionLaboralEditDialog" modal="true" resizable="false"  appendTo="@(body)" header="Edición de Finiquito" closeOnEscape="true">
+
+            <h:form id="FiniquitoRelacionLaboralEditForm">
+
+                <h:panelGroup id="display">
+                    <p:panelGrid  columns="2" columnClasses="column" rendered="#{ultimoFiniquitosController.selected != null}">
+
+                        <p:outputLabel value="Trabajador:"/>
+                        <p:outputLabel value="#{ultimoFiniquitosController.selected.relacionLaboral.trabajador}"/>
+                        
+                        <p:outputLabel value="Empresa:"/>
+                        <p:outputLabel value="#{ultimoFiniquitosController.selected.relacionLaboral.empresa}"/>
+
+                        <p:outputLabel value="Fecha Contrato:"/>
+                        <p:outputLabel value="#{ultimoFiniquitosController.selected.relacionLaboral.fechaInicio}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </p:outputLabel>
+
+                        <p:outputLabel value="Causal:" for="causalFiniquito" />
+                        <h:panelGroup>
+                            <p:selectOneMenu id="causalFiniquito" value="#{ultimoFiniquitosController.selected.causalFiniquito}" required="true" requiredMessage="#{bundle.EditFiniquitoRelacionLaboralRequiredMessage_causalFiniquito}" converter="causalFiniquitoConverter">
+                                <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
+                                <f:selectItems value="#{ultimoFiniquitosController.causalFiniquitosItems}"
+                                               var="causalFiniquitoItem"
+                                               itemValue="#{causalFiniquitoItem}"
+                                               itemLabel="#{causalFiniquitoItem.descripcionCausalFiniquito.toString()}"
+                                               />
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+
+                        <p:outputLabel value="Fecha Finiquito:" for="fechaFiniquito" />
+                        <h:panelGroup>
+                            <p:calendar id="fechaFiniquito" pattern="dd/MM/yyyy" value="#{ultimoFiniquitosController.selected.fechaFiniquito}" title="#{bundle.EditFiniquitoRelacionLaboralTitle_fechaFiniquito}" required="true" requiredMessage="#{bundle.EditFiniquitoRelacionLaboralRequiredMessage_fechaFiniquito}" onfocus="this.setSelectionRange(0, 2)"/>
+                        </h:panelGroup>
+
+                        <p:outputLabel value="#{bundle.EditFiniquitoRelacionLaboralLabel_montoFiniquito}" for="montoFiniquito" />
+                        <h:panelGroup>
+                            <p:inputText id="montoFiniquito" value="#{ultimoFiniquitosController.selected.montoFiniquito}" title="#{bundle.EditFiniquitoRelacionLaboralTitle_montoFiniquito}" required="true" requiredMessage="#{bundle.EditFiniquitoRelacionLaboralRequiredMessage_montoFiniquito}"/>
+                        </h:panelGroup>
+
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{ultimoFiniquitosController.save}" value="#{bundle.Save}" update="display,Display:datalist,:growl" oncomplete="handleSubmit(xhr,status,args,PF('FiniquitoRelacionLaboralEditDialog'));">
+                        <p:confirm header="#{bundle.ConfirmationHeader}" message="¿Actualizar el finiquito?" icon="ui-icon-alert"/>
+                    </p:commandButton>
+                    <p:commandButton value="#{bundle.Cancel}" oncomplete="PF('FiniquitoRelacionLaboralEditDialog').hide()" update="display" process="@this" immediate="true" resetValues="true"/>
+                </h:panelGroup>
+                <ui:include src="/WEB-INF/include/confirmation.xhtml"/>
+            </h:form>
+
+        </p:dialog>
+
+    </ui:define>
+
+</ui:composition>

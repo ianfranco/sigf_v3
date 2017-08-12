@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+        <p:dialog id="SindicatoTrabajadorEditDlg" widgetVar="SindicatoTrabajadorEditDialog" modal="true" resizable="false"  appendTo="@(body)" header="#{bundle.EditSindicatoTrabajadorTitle}" closeOnEscape="true">
+
+            <h:form id="SindicatoTrabajadorEditForm">
+
+                <h:panelGroup id="display">
+                    <p:panelGrid  columns="2" columnClasses="column" rendered="#{sindicatoTrabajadorController.selected != null}">
+
+                        <p:outputLabel value="Código" for="codigoTrabajador" />
+                        <h:panelGroup>
+                            <p:outputLabel id="codigoTrabajador" value="#{sindicatoTrabajadorController.selected.trabajador.codigoTrabajador}"/>
+                        </h:panelGroup>
+                        
+                        <p:outputLabel value="Nombre:" for="nombreTrabajador" />
+                        <h:panelGroup>
+                            <p:outputLabel id="nombreTrabajador" value="#{sindicatoTrabajadorController.selected.trabajador}"/>
+                        </h:panelGroup>
+
+                        <p:outputLabel value="#{bundle.EditSindicatoTrabajadorLabel_sindicato}" for="sindicato" />
+                        <h:panelGroup>
+                            <p:selectOneMenu id="sindicato" value="#{sindicatoTrabajadorController.selected.sindicato}" required="true" requiredMessage="#{bundle.EditSindicatoTrabajadorRequiredMessage_sindicato}" converter="sindicatoConverter">
+                                <f:selectItem itemLabel="#{bundle.SelectOneMessage}"/>
+                                <f:selectItems value="#{sindicatoTrabajadorController.sindicatoItems}"
+                                               var="sindicatoItem"
+                                               itemValue="#{sindicatoItem}"
+                                               itemLabel="#{sindicatoItem}"
+                                               />
+
+                            </p:selectOneMenu>
+
+                        </h:panelGroup>
+
+
+
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{sindicatoTrabajadorController.save}" value="#{bundle.Save}" update="display,:SindicatoTrabajadorListForm:datalist,:growl" oncomplete="handleSubmit(xhr,status,args,PF('SindicatoTrabajadorEditDialog'));">
+                        <p:confirm header="#{bundle.ConfirmationHeader}" message="#{bundle.ConfirmEditMessage}" icon="ui-icon-alert"/>
+                    </p:commandButton>
+                    <p:commandButton value="#{bundle.Cancel}" oncomplete="PF('SindicatoTrabajadorEditDialog').hide()" update="display" process="@this" immediate="true" resetValues="true"/>
+                </h:panelGroup>
+
+            </h:form>
+
+        </p:dialog>
+
+    </ui:composition>
+
+</html>
